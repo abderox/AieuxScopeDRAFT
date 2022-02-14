@@ -28,6 +28,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -143,17 +144,6 @@ public class Todo_list extends AppCompatActivity implements customizedAlertM.cus
             public void onClick(View v) {
 
                 openDialog();
-                Random random = new Random();
-                String str="";
-                for(int i =0 ; i< 5; i++)
-                {
-                    str += random.nextInt(9);
-                }
-
-                DatabaseHelper databaseHelper = new DatabaseHelper(Todo_list.this);
-                User user = databaseHelper.getUser();
-                databaseReference.child("code").child(user.getEmail().replace('.','_')).child("email").setValue(user.getEmail());
-                databaseReference.child("code").child(user.getEmail().replace('.','_')).child("code").setValue(str);
 
             }
         });
@@ -248,11 +238,22 @@ public class Todo_list extends AppCompatActivity implements customizedAlertM.cus
 
     @Override
     public void applyTexts( String Number) {
-        //Insert into db
+
         if (  Number.length() != 10) {
             Toast.makeText(getApplicationContext(), getString(R.string.tryagainn), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.tryagainn), Toast.LENGTH_SHORT).show();
+            SmsManager smsManager = SmsManager.getDefault();
+            final String  randomed = randomize();
+            String textMsg = getString(R.string.senMsg) +randomed;
+            DatabaseHelper databaseHelper = new DatabaseHelper(Todo_list.this);
+            User user = databaseHelper.getUser();
+
+            databaseReference.child("code").child(user.getEmail().replace('.','_')).child("email").setValue(user.getEmail());
+            databaseReference.child("code").child(user.getEmail().replace('.','_')).child("code").setValue(randomed);
+
+            smsManager.sendTextMessage(Number, null, textMsg, null, null);
+            Toast.makeText(getApplicationContext(), getString(R.string.messageSe)+Number, Toast.LENGTH_SHORT).show();
+
         }
 
 
@@ -431,37 +432,14 @@ public class Todo_list extends AppCompatActivity implements customizedAlertM.cus
         return DayOfWeek.of(day).toString();
     }
 
-    public static void createTask(Context context,String title, String description , String date , String category){
-
-        APIServices service =   RetrofitAPI.getRetrofitInstance().create(APIServices.class);
-        TodoModel todoModel = new TodoModel(title, description,category,date );
-
-        Call<Todo> call = service.createtask("barer "+Shared.token,todoModel);
-        call.enqueue(new Callback<Todo>() {
-            @Override
-            public void onResponse(Call<Todo> call, Response<Todo> response) {
-                try{
-
-
-                    if (response.body().isSuccess()) {
-                        Shared.Alert(context, "Error !", "bye bye ");
-                        return;
-                    } else  {
-                        Shared.Alert(context, "Error !", "Null");
-                        return;
-                    }
-                }catch (Exception e){
-
-
-                    Log.e(TAG,"onFailure: "+ e.getMessage());
-                }
-            }
-            @Override
-            public void onFailure(Call<Todo> call, Throwable t) {
-
-                Shared.Alert(context,"Error !","An Error was occurred try later ");
-                Log.e(TAG,"onFailure: "+ t.getMessage());
-            }
-        });
+    private String randomize()
+    {
+        Random random = new Random();
+        String str="";
+        for(int i =0 ; i< 5; i++)
+        {
+            str += random.nextInt(9);
+        }
+        return str;
     }
 }

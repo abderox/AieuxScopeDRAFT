@@ -240,24 +240,20 @@ public class CreateTaskBottomSheetFragment extends BottomSheetDialogFragment {
             alarmIntent.putExtra("DESC", addTaskDescription.getText().toString());
             alarmIntent.putExtra("DATE", taskDate.getText().toString());
             alarmIntent.putExtra("TIME", taskTime.getText().toString());
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity,count, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getBroadcast(activity,count, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
-                } else {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
-                }
+
                 count ++;
 
                     PendingIntent intent = PendingIntent.getBroadcast(activity, count, alarmIntent, 0);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() - 600000, intent);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
                             alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() - 600000, intent);
-                        } else {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() - 600000, intent);
-                        }
+
                     }
                 count ++;
             }

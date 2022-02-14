@@ -107,7 +107,7 @@
             android:singleLine="true"
             android:background="@drawable/btn_border"
             android:padding="10dp"
-            android:id="@+id/taskDate"
+            android:id="@+id/taskCategory"
             tools:ignore="MissingPrefix" />
 
         <TextView
@@ -137,7 +137,7 @@
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add"
+            android:id="@+id/addToMongo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -163,5 +163,14 @@
     <string name="task_description4">Task description</string>
     <string name="categoryd">Category</string>
     <string name="addNum">Add number</string>
+    <string name="senMsg">"Hey ! here is the code that will permits you create tasks for me \n code : "</string>
+    <string name="messageSe">"Message sent to "</string>
+    <string name="add_a_medicine">"Add medicine reminder "</string>
+    <string name="fill_the_details_below_to_add_a_task_into_your_todo">Fill the details below to add your medicine</string>
+    <string name="medicine_title">Medicine Name</string>
+    <string name="medicine_description">Medicine description</string>
+    <string name="medicine_date">which day you want to be reminded ?</string>
+    <string name="alarm_time">Alarm time</string>
+    <string name="add_reminder">Add Reminder</string>
 
 </resources>

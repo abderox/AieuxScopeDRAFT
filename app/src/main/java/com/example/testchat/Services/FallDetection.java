@@ -47,21 +47,22 @@ public class FallDetection extends Service implements SensorEventListener {
     private SQLiteDatabase sql;
 
     Handler handler = new Handler(Looper.getMainLooper());
-    //handling the main important process
+
     Handler handlers = new Handler();
     Runnable runnable;
-    //
+
     private Handler mPeriodicEventHandler = new Handler();
     private final int PERIODIC_EVENT_TIMEOUT = 3000;
 
     private Timer fuseTimer = new Timer();
     private int sendCount = 0;
     private char sentRecently = 'N';
-    //Three Sensor Fusion - Variables:
-    // angular speeds from gyro
+
+
     private float[] gyro = new float[3];
     private float degreeFloat;
     private float degreeFloat2;
+
     // rotation matrix from gyro data
     private float[] gyroMatrix = new float[9];
 
