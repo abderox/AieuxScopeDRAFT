@@ -30,9 +30,9 @@ public class    AlarmReceiver extends BroadcastReceiver {
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"android")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle("Android Alarm Manager")
-                .setContentText("Il est temps pour vous de prendre un verre d'eau")
+                .setSmallIcon(R.drawable.icon_splash)
+                .setContentTitle("AieuxScope Water Reminder")
+                .setContentText("Time to refresh your guts !")
                 .setAutoCancel(true)
                 .addAction(R.drawable.ic_launcher_background,"yes",pendingIntent)
                 .addAction(R.drawable.ic_launcher_background,"no",pandingIntent)

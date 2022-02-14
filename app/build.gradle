@@ -86,4 +86,14 @@ dependencies {
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
     implementation 'com.google.firebase:firebase-database'
+    //opencsv
+    implementation 'com.opencsv:opencsv:4.6'
+    //graph
+    implementation 'com.jjoe64:graphview:4.2.2'
+    //piechart
+    implementation 'com.github.blackfizz:eazegraph:1.2.5l@aar'
+    implementation 'com.nineoldandroids:library:2.4.0'
+
+    //calendar
+    implementation 'com.applandeo:material-calendar-view:1.7.0'
 }

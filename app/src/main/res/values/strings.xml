@@ -17,21 +17,17 @@
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="previous">Previous</string>
-
     <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="hello_second_fragment" tools:ignore="MissingTranslation">Hello second fragment. Arg: %1$s</string>
     <string name="title_ifall_alert">Fall detection</string>
-
-    <string name="supporting_text_ifall">"This application feature is built by our development team to help especially elderly people detect their fall and contact their SOS contacts .And to differentiate between crucial urgent moment and a deliberately throw or even a normal fall . The user can set a count down when to call the emergency contact already sat. \n By accepting ,  the application will be permitted to be running in the background , which you can stop anytime .
-       \n TO EDIT YOUR CONTACTS APPLY A LONG PRESS ON THE ITEM
+    <string name="supporting_text_ifall">"This application feature is built by our development team \nto help especially elderly people detect their fall and contact their SOS contacts .And to differentiate between crucial urgent moment and a deliberately throw or even a normal fall . \nThe user can set a count down when to call the emergency contact already sat. \n By accepting ,  the application will be permitted to be running in the background , which you can stop anytime .
+       \nTO EDIT YOUR CONTACTS APPLY A LONG PRESS ON THE ITEM
         "</string>
+    <string name="AcceloAnalyse">"This feature is a beta version "UNDER DEVELOPMENT" \nIt aims to collect data about the way you habitually walk , we recommend you to do at least 5 to 10 min walking .. and TO PUT YOUR PHONE IN A STEADY POSITION for BETTER results \nTHUS , THAT FEATURE COULD HELP YOU IN TWO WAYS :\n\n-Detect theft (in upcoming further versions)\n-Detect walk problems which is our main goal.\n\nNote that we provide you With two percentages depending on data recorded (ESTIMATION) !"</string>
     <string name="cancel" tools:ignore="ButtonCase">cancel</string>
     <string name="decline">decline</string>
     <string name="accept">accept</string>
     <string name="okay">okay</string>
-
-
-
     <string name="email_app">AieuxScopeCContact@gmail.com</string>
     <string name="AppName">AieuxScope</string>
     <string name="medicine_nreminder">Medicine \nReminder</string>
@@ -40,17 +36,58 @@
     <string name="i_fall">I fall</string>
     <string name="water_nreminder">Water\nReminder</string>
     <string name="my_doctor">My Doctor</string>
-
     <string name="hello">Hello</string>
     <string name="i_fall_title">I Fall</string>
     <string name="title_activity_customized_alert">customizedAlert</string>
     <string name="activate_feature">Activate Feature</string>
-
     <string name="alarmejarcupbottle2">set</string>
     <string name="alarmejarcupbottle">set my next take now!</string>
     <string name="needjar">See my needs for today</string>
     <string name="selecttime">Select time</string>
     <string name="dialog">Your Needs</string>
     <string name="cncl">Cancel</string>
+    <string name="who_am_i">Who ?</string>
+    <string name="run_on_background">Run on Background</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="title_who">Who ?</string>
+    <string name="Servicehelp_who">"The service will proceed to be running in the background \nTo START  &amp;  \"click\" here "</string>
+    <string name="startRunningSVwho">Who service</string>
+    <string name="dontshow">Don\'t show again</string>
+    <string name="howto"><![CDATA["We recommend you ,as your first time, to enable the feature on Forground for at least 5 -> 10 minutes , so it can store the default data .\nAs you can record as much as you want while on foreground ! "]]></string>
+    <string name="more">More</string>
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="tools">Tools</string>
+    <string name="fall_detection">Fall detection</string>
+    <string name="share">Share</string>
+    <string name="who">Who?</string>
+    <string name="about_app">About app</string>
+    <string name="data_similiraty">Data %Similiraty</string>
+    <string name="who_took_my_phone">Who took my phone ?</string>
+    <string name="reset">Reset to default</string>
+    <string name="resetdef">All data collected will be vanished by clicking \"Okay\"</string>
+    <string name="contact_us">Contact us</string>
+    <string name="services_used_within_the_app">Services being used within the app</string>
+    <string name="sensors_movement_detection_storage_sms_n_gps_vibration_alarm">Sensors(movement detection) - Storage - SMS \n- GPS - VIBRATION - ALARM</string>
+    <string name="authorizations_required">Authorizations required</string>
+    <string name="check_our_website">Check our website</string>
+    <string name="www_aieuxscope_com">www.aieuxscope.com</string>
+    <string name="email">Email</string>
+    <string name="aieuxscopeccontact_gmail_com">AieuxScopeCContact@gmail.com</string>
+    <string name="gps_storage_sms_sensors_internet">GPS + STORAGE + SMS + SENSORS + INTERNET</string>
+    <string name="aieuxscope_v1_0">AieuxScope v1.0</string>
+    <string name="aieuxscopeCust">AieuxScope Customer</string>
+    <string name="all_days">All days</string>
+    <string name="confirmation">Completed the task!..</string>
+    <string name="sureToMarkAsComplete">Are you sure you want to mark this task as completed.</string>
+    <string name="congrats_you_have_completed_the_task_successfully">AieuxScope hopes you recovered ! Your reminder is deleted succefully!</string>
+    <string name="delete_confirmation">Confirmation</string>
+    <string name="sureToDelete">Are you sure you want to delete the task</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
+    <string name="completed">Completed</string>
+    <string name="average_accelometer">%AVG acceleration</string>
 
 </resources>

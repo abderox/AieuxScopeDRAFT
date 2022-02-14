@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.testchat">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,16 +12,32 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".Views.AboutUs"
+            android:exported="true" />
+        <activity
+            android:name=".Views.AcceloGraph"
+            android:exported="true" />
+        <activity
+            android:name=".Views.AcceloDATA"
+            android:exported="true" />
+
+        <service
+            android:name=".Services.AcceloData"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".Views.ChatMessage"
             android:exported="true" />
@@ -53,8 +70,6 @@
             android:name=".Views.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-
-
         <activity
             android:name=".Views.Splashscreen2"
             android:label="@string/app_name"
@@ -69,14 +84,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Adapters.updatecup"
-            android:label="@string/app_name"
-            />
+            android:label="@string/app_name" />
         <activity
             android:name=".Views.ActivityNumberPicher"
-            android:label="@string/app_name"
-            />
+            android:label="@string/app_name" />
         <activity
-
             android:name=".Views.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
@@ -86,20 +98,36 @@
             </intent-filter>
         </activity>
 
-
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
         <receiver
             android:name=".Services.AlarmReceiver"
             android:exported="true" />
+        <receiver
+            android:name=".Services.FallRunningBG"
+            android:exported="true" />
+        <receiver
+            android:name=".Services.WhoBG"
+            android:exported="true" />
+        <activity android:name=".Views.AlarmActivity"></activity>
 
+        <receiver android:name=".Services.broadcastReceiver.AlarmBroadcastReceiver"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".Services.broadcastReceiver.AlarmService"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="Instantiatable" />
     </application>
 
 </manifest>

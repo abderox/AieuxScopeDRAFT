@@ -2,8 +2,13 @@ package com.example.testchat.Views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,10 +34,15 @@ import com.example.testchat.Adapters.BottomNavigationViewHelper;
 import com.example.testchat.Adapters.EmergencyAdapter;
 import com.example.testchat.Adapters.customizedAlert;
 import com.example.testchat.Models.EmergencyContact;
+import com.example.testchat.Models.User;
 import com.example.testchat.R;
 import com.example.testchat.Services.ContactContract;
 import com.example.testchat.Services.DatabaseHelper;
 import com.example.testchat.Services.FallDetection;
+import com.example.testchat.Services.FallRunningBG;
+import com.example.testchat.Services.Shared;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,8 +52,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
-public class FallDetectionActivity extends AppCompatActivity implements customizedAlert.customizedAlertListener ,NavigationView.OnNavigationItemSelectedListener  {
+public class FallDetectionActivity extends AppCompatActivity implements customizedAlert.customizedAlertListener, NavigationView.OnNavigationItemSelectedListener {
 
     ListView lv;
     EditText edit;
@@ -51,8 +62,11 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
     String provider;
     FloatingActionButton addContacts;
     private CoordinatorLayout coordinate;
+    SwitchMaterial simpleSwitch;
     ArrayList<EmergencyContact> arrayList = new ArrayList<>();
     EmergencyAdapter arrayAdapter;
+    private PendingIntent pendingIntent;
+    public static boolean switchvar = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,12 +85,18 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
 
         lv = (ListView) findViewById(R.id.contacts);
         coordinate = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
-        SwitchMaterial simpleSwitch = (SwitchMaterial) findViewById(R.id.switchfall);
+         simpleSwitch = (SwitchMaterial) findViewById(R.id.switchfall);
 
+
+        SharedPreferences settings = getSharedPreferences("Fallservice", 0);
+        boolean silent = settings.getBoolean("switchkeyfall", false);
+        simpleSwitch.setChecked(silent);
+
+        simpleSwitch.setChecked(switchvar || MainActivity.switchVar);
         Boolean switchState = simpleSwitch.isChecked();
         DatabaseHelper dpHelper = new DatabaseHelper(this);
         sql = dpHelper.getWritableDatabase();
-        String count = "SELECT count(*) FROM "+ ContactContract.TABLE_NAME;
+        String count = "SELECT count(*) FROM " + ContactContract.TABLE_NAME;
         Cursor mcursor = sql.rawQuery(count, null);
         mcursor.moveToFirst();
         int icount = mcursor.getInt(0);
@@ -87,20 +107,49 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
         MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
 
+        if(icount<1)
+        {
+            simpleSwitch.setEnabled(false);
+        }
+
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.navigationHome:
+
                         item.setChecked(true);
                         startActivity(new Intent(FallDetectionActivity.this, MainActivity.class));
                         break;
 
                     case R.id.navigationMyProfile:
 
+                        DatabaseHelper databaseHelper = new DatabaseHelper(FallDetectionActivity.this);
+                        User user = databaseHelper.getUser();
+                        if (user != null){
+                            Shared.login(FallDetectionActivity.this, user.getEmail(), user.getPassword());
+                        }else{
+                            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(FallDetectionActivity.this);
+                            if(account != null){
+                                startActivity(new Intent(FallDetectionActivity.this,ProfileActivity.class));
+                                overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+                            }else{
+
+                                startActivity(new Intent(FallDetectionActivity.this,LoginActivity.class));
+                                overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+                            }
+                        }
+                        return true;
+
+                    case R.id.navigationMenu:
+                        item.setChecked(true);
+                        SharedPreferences preferences = getApplicationContext().getSharedPreferences("openNav", 0);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putBoolean("openvaav", true);
+                        editor.apply();
+                        startActivity(new Intent(FallDetectionActivity.this, MainActivity.class));
                         break;
-
-
                 }
 
 
@@ -111,22 +160,41 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
         simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
-                    if(icount>0){
-                        Toast.makeText(getApplicationContext(),"Safe walking! We track you for safety",Toast.LENGTH_SHORT).show();
-                        Intent intent= new Intent(getApplicationContext(), FallDetection.class);
+                if (isChecked) {
+                    if (icount > 0) {
+                        setyyy();
+                        switchvar = true;
+                        MainActivity.switchVar = true;
+                        Toast.makeText(getApplicationContext(), "Safe walking! We track you for safety", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), FallDetection.class);
                         startService(intent);
-                    }else{
+
+//                        Intent bg_running = new Intent(getApplicationContext(), FallRunningBG.class);
+//                         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, bg_running, 0);
+//                        long futureInMillis = SystemClock.elapsedRealtime () + 2000 ;
+//                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context. ALARM_SERVICE ) ;
+//                        assert alarmManager != null;
+//                        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP , futureInMillis , pendingIntent) ;
+
+
+                    } else {
+
                         simpleSwitch.setChecked(false);
-                        Toast.makeText(getApplicationContext(),"Add at least one contact then try again",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Add at least one contact then try again", Toast.LENGTH_SHORT).show();
                     }
                     mcursor.close();
-                }
-                else{
-                    Intent intent= new Intent(getApplicationContext(), FallDetection.class);
+                } else {
+                    switchvar = false;
+                    MainActivity.switchVar = false;
+                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancel(1233);
+                    Intent intent = new Intent(getApplicationContext(), FallDetection.class);
                     stopService(intent);
                 }
+                SharedPreferences settings = getSharedPreferences("Fallservice", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("switchkeyfall", isChecked);
+                editor.commit();
             }
         });
 
@@ -157,19 +225,20 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
             }
         });
 
-        if(icount>0){
+        if (icount > 0) {
             Cursor cursor = getAllContacts();
-            if (cursor.moveToFirst()){
-                do{
+            if (cursor.moveToFirst()) {
+                do {
                     @SuppressLint("Range") String username = cursor.getString(cursor.getColumnIndex("name"));
                     @SuppressLint("Range") String number = cursor.getString(cursor.getColumnIndex("contact"));
-                    arrayList.add(new EmergencyContact(username,number));
-                }while(cursor.moveToNext());
+                    arrayList.add(new EmergencyContact(username, number));
+                } while (cursor.moveToNext());
             }
             cursor.close();
-             arrayAdapter = new EmergencyAdapter(this,R.layout.simplerow,arrayList);
+            arrayAdapter = new EmergencyAdapter(this, R.layout.simplerow, arrayList);
             lv.setAdapter(arrayAdapter);
-            Snackbar snackbar=Snackbar.make(coordinate,"To add more contacts PRESS \"+\" "  ,Snackbar.LENGTH_INDEFINITE);
+            simpleSwitch.setEnabled(true);
+            Snackbar snackbar = Snackbar.make(coordinate, "To add more contacts PRESS \"+\" ", Snackbar.LENGTH_INDEFINITE);
             snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
             snackbar.setAction("OKAY", view -> {
 
@@ -177,9 +246,8 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
 //                snackbar.setAnchorView(floatingButton);
             snackbar.show();
 
-        }
-        else {
-            Snackbar snackbar=Snackbar.make(coordinate,"No contacts yet ! add now."  ,Snackbar.LENGTH_INDEFINITE);
+        } else {
+            Snackbar snackbar = Snackbar.make(coordinate, "No contacts yet ! add now.", Snackbar.LENGTH_INDEFINITE);
             snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
             snackbar.setAction("CANCEL", view -> {
                 //
@@ -200,12 +268,14 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Toast.makeText(getApplicationContext(),arrayList.get(i).getNumber(), Toast.LENGTH_LONG).show();
-               showPopUpMenu(view,i);
+                Toast.makeText(getApplicationContext(), arrayList.get(i).getNumber(), Toast.LENGTH_LONG).show();
+                showPopUpMenu(view, i);
                 return false;
             }
         });
     }
+
+
     public void openDialog() {
         customizedAlert exampleDialog = new customizedAlert();
         exampleDialog.show(getSupportFragmentManager(), "Add contact");
@@ -214,23 +284,23 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
     @Override
     public void applyTexts(String Name, String Number) {
         //Insert into db
-        if(Name.length() != 10 && Number.length() !=10 ){
-            Toast.makeText(getApplicationContext(),"Please enter again!",Toast.LENGTH_SHORT).show();
-        }else{
+        if (Name.length() != 18 && Number.length() != 10) {
+            Toast.makeText(getApplicationContext(), "Please enter again!", Toast.LENGTH_SHORT).show();
+        } else {
             DatabaseHelper db = new DatabaseHelper(this);
-            db.addNewContact(Name,Number);
-            Toast.makeText(getApplicationContext(),"Contact Added",Toast.LENGTH_SHORT).show();
+            db.addNewContact(Name, Number);
+            Toast.makeText(getApplicationContext(), "Contact Added", Toast.LENGTH_SHORT).show();
             Cursor cursor = getAllContacts();
-            if (cursor.moveToFirst()){
-                do{
+            if (cursor.moveToFirst()) {
+                do {
                     @SuppressLint("Range") String username = cursor.getString(cursor.getColumnIndex("name"));
                     @SuppressLint("Range") String number = cursor.getString(cursor.getColumnIndex("contact"));
-                    arrayList.add(new EmergencyContact(username,number));
+                    arrayList.add(new EmergencyContact(username.toUpperCase(), number));
                     Toast.makeText(this, Number, Toast.LENGTH_SHORT).show();
-                }while(cursor.moveToNext());
+                } while (cursor.moveToNext());
             }
             cursor.close();
-            EmergencyAdapter arrayAdapter = new EmergencyAdapter(this,R.layout.simplerow,arrayList);
+            EmergencyAdapter arrayAdapter = new EmergencyAdapter(this, R.layout.simplerow, arrayList);
             lv.setAdapter(arrayAdapter);
             finish();
             overridePendingTransition(0, 0);
@@ -240,6 +310,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
 
 
     }
+
     public void showPopUpMenu(View view, int position) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
@@ -250,7 +321,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
                     alertDialogBuilder.setTitle("Delete contact").setMessage("Are you sure , you want to delete this contact ?").
                             setPositiveButton("Yes", (dialog, which) -> {
                                 deleteContactFromBynum(position);
-                                Toast.makeText(getApplicationContext(),"You have deleted from contacts", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "You have deleted from contacts", Toast.LENGTH_LONG).show();
 
                             })
                             .setNegativeButton("No", (dialog, which) -> dialog.cancel()).show();
@@ -261,7 +332,8 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
         });
         popupMenu.show();
     }
-    private void deleteContactFromBynum( int position) {
+
+    private void deleteContactFromBynum(int position) {
         @SuppressLint("StaticFieldLeak")
         class GetSavedContacts extends AsyncTask<Void, Void, ArrayList<EmergencyContact>> {
             @Override
@@ -294,8 +366,8 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
     }
 
 
-    public Cursor getAllContacts(){
-        return sql.rawQuery("SELECT  * FROM " + ContactContract.TABLE_NAME +";",null);
+    public Cursor getAllContacts() {
+        return sql.rawQuery("SELECT  * FROM " + ContactContract.TABLE_NAME + ";", null);
     }
 
     @Override
@@ -303,5 +375,28 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
         return false;
     }
 
+    private void setyyy() {
 
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, FallRunningBG.class);
+
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 10000 * 60 * 30, pendingIntent);
+
+        //Toast.makeText(this, "Notif will show up ", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!simpleSwitch.isChecked())
+        {
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(1238);
+        }
+    }
 }

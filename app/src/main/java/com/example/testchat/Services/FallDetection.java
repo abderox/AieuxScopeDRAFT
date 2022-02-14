@@ -2,6 +2,8 @@ package com.example.testchat.Services;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -22,12 +24,14 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
@@ -43,6 +47,10 @@ public class FallDetection extends Service implements SensorEventListener {
     private SQLiteDatabase sql;
 
     Handler handler = new Handler(Looper.getMainLooper());
+    //handling the main important process
+    Handler handlers = new Handler();
+    Runnable runnable;
+    //
     private Handler mPeriodicEventHandler = new Handler();
     private final int PERIODIC_EVENT_TIMEOUT = 3000;
 
@@ -94,6 +102,7 @@ public class FallDetection extends Service implements SensorEventListener {
     double latitude, longitude;
     LocationManager locationManager;
     LocationListener locationListener;
+    
     //phone
     String phoneNum="";
     String prevNumber="";
@@ -106,7 +115,6 @@ public class FallDetection extends Service implements SensorEventListener {
         public void run() {
 
             sentRecently = 'N';
-//            mPeriodicEventHandler.postDelayed(doPeriodicTask, PERIODIC_EVENT_TIMEOUT);
         }
     };
 
@@ -122,11 +130,16 @@ public class FallDetection extends Service implements SensorEventListener {
 
         Log.d("Initialing Service", "OnCreate");
         super.onCreate();
+
+
     }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+
         mPeriodicEventHandler.removeCallbacks(doPeriodicTask);
         senSensorManager.unregisterListener(this);
         sendCount = 0;
@@ -136,6 +149,7 @@ public class FallDetection extends Service implements SensorEventListener {
         }else {
             locationManager.removeUpdates(locationListener);
         }
+        handlers.removeCallbacksAndMessages(null);
 
     }
 
@@ -191,6 +205,7 @@ public class FallDetection extends Service implements SensorEventListener {
 
         return START_STICKY;
     }
+
 
     public void initListeners() {
         senSensorManager.registerListener(this,
@@ -265,6 +280,7 @@ public class FallDetection extends Service implements SensorEventListener {
         // in order to get a delta rotation from this sample over the timestep
         // We will convert this axis-angle representation of the delta rotation
         // into a quaternion before turning it into the rotation matrix.
+
         float thetaOverTwo = omegaMagnitude * timeFactor;
         float sinThetaOverTwo = (float) Math.sin(thetaOverTwo);
         float cosThetaOverTwo = (float) Math.cos(thetaOverTwo);
@@ -275,11 +291,11 @@ public class FallDetection extends Service implements SensorEventListener {
     }
 
     public void gyroFunction(SensorEvent event) {
-        // don't start until first accelerometer/magnetometer orientation has been acquired
+        // don't start until first accelerometer orientation has been acquired
         if (accMagOrientation == null)
             return;
 
-        // initialisation of the gyroscope based rotation matrix
+        // initialisation of the gyroscope  rotation matrix
         if (initState) {
             float[] initMatrix = new float[9];
             initMatrix = getRotationMatrixFromOrientation(accMagOrientation);
@@ -420,7 +436,8 @@ public class FallDetection extends Service implements SensorEventListener {
                                 Toast.makeText(FallDetection.this.getApplicationContext(), "You Fall !", Toast.LENGTH_SHORT).show();
 //                                ProgDialog progDialog = new ProgDialog(FallDetection.this);
 //                                progDialog.execute("10");
-                                new Handler().postDelayed(new Runnable() {
+
+                                 runnable = new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(FallDetection.this.getApplicationContext(), "Sending message!", Toast.LENGTH_SHORT).show();
@@ -437,35 +454,37 @@ public class FallDetection extends Service implements SensorEventListener {
                                                         cursor.getColumnIndexOrThrow(ContactContract.COLUMN_CONTACT));
                                                 itemIds.add(itemId);
                                             }while(cursor.moveToNext());}
-                                            cursor.close();
+                                        cursor.close();
 
-                                                    int i = 0;
-                                                    while(i<arrayList.size() && i<3)
-                                                    {
-                                                        phoneNum = arrayList.get(i).getNumber();
-                                                        String name = arrayList.get(i).getName();
-                                                        prevNumber = "";
-                                                        SmsManager smsManager = SmsManager.getDefault();
-                                                        if (phoneNum != prevNumber && phoneNum != null) {
-                                                            String msg = "Preparing message to send to "+name+ ":" + phoneNum;
-                                                            showToast(msg);
-                                                            String textMsg = " Danger here , I Fall :  => " + "http://www.google.com/maps/place/" + String.valueOf(latitude) + "," + String.valueOf(longitude) ;
-                                                            smsManager.sendTextMessage(phoneNum, null, textMsg, null, null);
-                                                           // Toast.makeText(FallDetection.this,"Sending message to "+name+ ":" + phoneNum, Toast.LENGTH_LONG).show();
-                                                            prevNumber = phoneNum;
-                                                            sendCount++;
-                                                        }
-                                                        i++;
-                                                    }
+                                        int i = 0;
+                                        while(i<arrayList.size() && i<3)
+                                        {
+                                            phoneNum = arrayList.get(i).getNumber();
+                                            String name = arrayList.get(i).getName();
+                                            prevNumber = "";
+                                            SmsManager smsManager = SmsManager.getDefault();
+                                            if (phoneNum != prevNumber && phoneNum != null) {
+                                                String msg = "Preparing message to send to "+name+ ":" + phoneNum;
+                                                showToast(msg);
+                                                String textMsg ="Please" +name+ " Danger here , I Fall : here are my coordinates  => " + "http://www.google.com/maps/place/" + String.valueOf(latitude) + "," + String.valueOf(longitude) ;
+                                                smsManager.sendTextMessage(phoneNum, null, textMsg, null, null);
+                                                // Toast.makeText(FallDetection.this,"Sending message to "+name+ ":" + phoneNum, Toast.LENGTH_LONG).show();
+                                                prevNumber = phoneNum;
+                                                sendCount++;
+                                            }
+                                            i++;
+                                        }
 
                                     }
-                                }, 30000);
+                                };
+                                handlers.postDelayed(runnable, 30000);
                                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
                                 MediaPlayer mPlayer2;
                                 mPlayer2 = MediaPlayer.create(getApplicationContext(), R.raw.notification);
                                 mPlayer2.start();
                                 v.vibrate(pattern,-1);
+
 
                             }
                         });
@@ -474,7 +493,7 @@ public class FallDetection extends Service implements SensorEventListener {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(FallDetection.this.getApplicationContext(), "Sudden Movement! But looks safe", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(FallDetection.this.getApplicationContext(), "OOps ! I hope You haven't fallen down ", Toast.LENGTH_SHORT).show();
                                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 v.vibrate(400);
                             }
@@ -512,16 +531,9 @@ public class FallDetection extends Service implements SensorEventListener {
             mToastToShow.show();
             toastCountDown.start();
         }
-        public boolean isScreenOn(Context context) {
-            DisplayManager dm = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
-            boolean screenOn = false;
-            for (Display display : dm.getDisplays()) {
-                if (display.getState() != Display.STATE_OFF) {
-                    screenOn = true;
-                }
-            }
-            return screenOn;
-        }
+
+
 
     }
+
 }

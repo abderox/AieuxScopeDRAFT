@@ -97,11 +97,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
-        overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+//        overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+//    }
 
     private void fillComponent() {
         APIServices service = RetrofitAPI.getRetrofitInstance().create(APIServices.class);

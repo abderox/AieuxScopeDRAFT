@@ -38,7 +38,7 @@ public class customizedAlert extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String Name = editTextName.getText().toString();
                         String Number = editTextNumber.getText().toString();
-                        listener.applyTexts(Name, Number);
+                        listener.applyTexts(Name.toUpperCase(), Number);
                     }
                 });
 
