@@ -29,7 +29,7 @@
                     android:layout_height="78dp"
                     android:layout_gravity="bottom"
                     android:fontFamily="@font/baloo_thambi"
-                    android:text="Assistance \nElderly people"
+                    android:text="@string/assistance_nelderly_people"
                     android:textSize="25sp" />
 
                 <ImageView

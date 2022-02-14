@@ -172,5 +172,6 @@
     <string name="medicine_date">which day you want to be reminded ?</string>
     <string name="alarm_time">Alarm time</string>
     <string name="add_reminder">Add Reminder</string>
+    <string name="assistance_nelderly_people">Assistance \nElderly people</string>
 
 </resources>
