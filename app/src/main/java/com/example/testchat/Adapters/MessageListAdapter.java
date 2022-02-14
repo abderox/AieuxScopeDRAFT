@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.testchat.Models.MessageList;
 import com.example.testchat.R;
+import com.example.testchat.Services.Shared;
 import com.example.testchat.Views.ChatMessage;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -24,6 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MyViewHolder> {
     List<MessageList> messageLists;
     final  Context context;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Shared.Link);
 
     public MessageListAdapter(List<MessageList> messageLists, Context context) {
         this.messageLists = messageLists;
@@ -83,6 +87,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     intent.putExtra("name",list.getName());
                     intent.putExtra("profilePic",list.getProfilePic());
                     intent.putExtra("chatId",list.getChatId());
+                    intent.putExtra("isLocked",false);
+                    String currentTimestampString = String.valueOf(System.currentTimeMillis());
+                    databaseReference.child("chat").child(list.getChatId()).child("lastTime").setValue(currentTimestampString);
                     context.startActivity(intent);
                 }
             });

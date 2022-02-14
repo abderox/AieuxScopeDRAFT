@@ -17,6 +17,7 @@ import com.example.testchat.R;
 import java.util.ArrayList;
 
 public class EmergencyAdapter extends ArrayAdapter<EmergencyContact> {
+
     private Context context;
     private  int resource;
 

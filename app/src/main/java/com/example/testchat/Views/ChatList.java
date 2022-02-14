@@ -1,8 +1,7 @@
 package com.example.testchat.Views;
 
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,13 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
-import com.example.testchat.Models.MessageList;
 
+import com.bumptech.glide.Glide;
 import com.example.testchat.Adapters.MessageListAdapter;
+import com.example.testchat.Models.MessageList;
 import com.example.testchat.R;
+import com.example.testchat.Services.DatabaseHelper;
 import com.example.testchat.Services.Shared;
-import com.example.testchat.Services.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -35,7 +34,9 @@ public class ChatList extends AppCompatActivity {
     List<MessageList> messageLists = new ArrayList<>();
     RecyclerView recyclerView;
     ImageView imageView;
+    FloatingActionButton addDoctor;
     TextView myName;
+    DatabaseHelper databaseHelper ;
     boolean dataSet = false;
     CircleImageView circleImageView;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Shared.Link);
@@ -44,9 +45,24 @@ public class ChatList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
+        databaseHelper = new DatabaseHelper(ChatList.this);
+        // extract data
+        String userEmail = getIntent().getExtras().getString("email");
+        Shared.currentUser = userEmail;
+        String userName = getIntent().getExtras().getString("name");
+        String userPhoto = getIntent().getExtras().getString("profilePicUrl");
+        String userId = getIntent().getExtras().getString("userId");
         imageView = findViewById(R.id.backHome);
+        addDoctor = findViewById(R.id.addDoctor);
         myName = findViewById(R.id.myname);
-        myName.setText("Welcome "+ Utils.Name);
+        myName.setText(getString(R.string.welcome)+" "+ userName);
+        addDoctor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatList.this,DoctorsList.class);
+                startActivity(intent);
+            }
+        });
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,29 +75,9 @@ public class ChatList extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageListAdapter = new MessageListAdapter(messageLists, ChatList.this);
         recyclerView.setAdapter(messageListAdapter);
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        //progressDialog.setCancelable(false);
-        progressDialog.setMessage("loading");
-        progressDialog.setTitle("wait");
-        progressDialog.show();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String profilePicUrl = snapshot.child("users").child(Utils.Email.replace('.','_')).child("profilePicUrl").getValue(String.class);
-
-                if (profilePicUrl != null && !profilePicUrl.isEmpty())
-                    Glide.with(ChatList.this).load(profilePicUrl).into(circleImageView);
-                progressDialog.dismiss();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                progressDialog.dismiss();
-                Log.v("error failed", error.getMessage());
-            }
-        });
+        if (userPhoto != null && !userPhoto.isEmpty())
+            Glide.with(ChatList.this).load(userPhoto).into(circleImageView);
+        else circleImageView.setImageResource(R.drawable.unknowuser);
         databaseReference.addValueEventListener(new ValueEventListener() {
             String chatId = "";
             @Override
@@ -93,12 +89,11 @@ public class ChatList extends AppCompatActivity {
                 ) {
                     String getEmail = dataSnapshot.child("email").getValue(String.class);
                     String getDoctorKey = dataSnapshot.getKey();
-                    Log.v("Test Error ", getDoctorKey);
-                    if (!getDoctorKey.equals(Utils.Email.replace('.','_'))) {
+                    if (!getDoctorKey.equals(userId)) {
                         int getMsgCount = 0;
                         String getLastMsg = "";
                         String getTime = "";
-                        String getDate = "";
+//                        String getDate = "";
                         chatId ="";
                         String getName = dataSnapshot.child("name").getValue(String.class);
                         String getProfilePic = dataSnapshot.child("profilePicUrl").getValue(String.class);
@@ -109,37 +104,36 @@ public class ChatList extends AppCompatActivity {
                                 if (dataSnapshot1.hasChild("doctor") && dataSnapshot1.hasChild("user") && dataSnapshot1.hasChild("messages")) {
                                     String getDoctor = dataSnapshot1.child("doctor").getValue(String.class);
                                     String getUser = dataSnapshot1.child("user").getValue(String.class);
-                                    if ((getDoctor.equals(getEmail) && getUser.equals(Utils.Email)) ) {
+                                    String getLastTime = dataSnapshot1.child("lastTime").getValue(String.class);
+                                    if ((getDoctor.equals(getEmail) && getUser.equals(userEmail)) ) {
                                         chatId = getKey;
                                         getEmail = getDoctor;
                                         for (DataSnapshot msgSnapshot : dataSnapshot1.child("messages").getChildren()
                                         ) {
                                             long getLastTimestamp = Long.parseLong(msgSnapshot.getKey());
-                                            long getLastTimestampLocal = Long.parseLong(Utils.LasTimestamp);
+                                            if (getLastTime == null || getLastTime.isEmpty()){
+
+                                                getLastTime = String.valueOf(System.currentTimeMillis());
+                                            }
+                                            long getLastTimestampLocal = Long.parseLong(getLastTime);
                                             getLastMsg = msgSnapshot.child("msg").getValue(String.class);
                                             getTime = msgSnapshot.child("time").getValue(String.class);
-                                            getDate = msgSnapshot.child("date").getValue(String.class);
+//                                            getDate = msgSnapshot.child("date").getValue(String.class);
                                             if (getLastTimestamp > getLastTimestampLocal)
                                                 getMsgCount++;
-                                            Utils.LasTimestamp = msgSnapshot.getKey();
+//                                            databaseHelper.updateTempData(String.valueOf(getLastTimestamp));
                                         }
-
+                                        dataSet = true;
+                                        MessageList messageList = new MessageList(getName, getEmail, getLastMsg, getProfilePic, getTime, getMsgCount, chatId);
+                                        messageLists.add(messageList);
+                                        messageListAdapter.updateData(messageLists);
 
                                     }
                                 }
 
                             }
                         }
-                        dataSet = true;
-                        MessageList messageList = new MessageList(getName, getEmail, getLastMsg, getProfilePic, getTime, getMsgCount, chatId);
-                        messageLists.add(messageList);
-                        Iterator<MessageList> iterator = messageLists.iterator();
-                        while (iterator.hasNext()) {
-                            Log.v( "Test Error ", iterator.next().getEmail());
-                        }
-                        messageListAdapter.updateData(messageLists);
 
-                        Log.v("Test Error ", "IN LOOP NOW "+ getEmail);
                     }
 
                 }
@@ -156,4 +150,5 @@ public class ChatList extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
+
 }

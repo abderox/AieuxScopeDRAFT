@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,12 +32,15 @@ import androidx.fragment.app.Fragment;
 
 import com.example.testchat.Adapters.BottomNavigationBehavior;
 import com.example.testchat.Adapters.DarkModePrefManager;
+import com.example.testchat.Models.Person;
 import com.example.testchat.Models.User;
 import com.example.testchat.R;
+import com.example.testchat.Services.APIServices;
 import com.example.testchat.Services.ContactContract;
 import com.example.testchat.Services.DatabaseHelper;
 import com.example.testchat.Services.FallDetection;
 import com.example.testchat.Services.FallRunningBG;
+import com.example.testchat.Services.RetrofitAPI;
 import com.example.testchat.Services.Shared;
 import com.example.testchat.Services.Utils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -50,6 +54,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private static final int MODE_LIGHT = 1;
     public static boolean switchVar = false;
     boolean isChecked;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Shared.Link);
     //check on db that there is at least one contact to swith the feature on
     private SQLiteDatabase sql;
     SwitchMaterial ss;
@@ -74,20 +83,28 @@ public class MainActivity extends AppCompatActivity
                 case R.id.navigationMyProfile:
                     DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
                     User user = databaseHelper.getUser();
-                    if (user != null) {
+                    if (user != null){
                         Shared.login(MainActivity.this, user.getEmail(), user.getPassword());
-                    } else {
+                        if (!Shared.token.isEmpty()) {
+                            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                            MainActivity.this.startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+                        }
+                    }else{
                         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
-                        if (account != null) {
-                            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
-                        } else {
+                        if(account != null){
+                            startActivity(new Intent(MainActivity.this,ProfileActivity.class));
+                            overridePendingTransition(android.R.anim.slide_out_right, R.anim.slide_in_left);
 
-                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
+                        }else{
+
+                            startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                            overridePendingTransition(android.R.anim.slide_out_right,R.anim.slide_in_left );
+
                         }
                     }
                     return true;
+
 
                 case R.id.navigationHome:
                     return true;
@@ -132,35 +149,110 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
                 progressDialog.setCancelable(false);
-                progressDialog.setMessage("loading");
-                progressDialog.setTitle("wait");
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.setTitle(getString(R.string.wait));
                 progressDialog.show();
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Shared.Link);
-                Log.v("Rrrrrrrrrrrrrrrrrrrrrr", "step1");
-                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.v("Rrrrrrrrrrrrrrrrrrrrrr", "step2");
-                        if (!snapshot.child("users").hasChild(Utils.Email.replace('.', '_'))) {
-                            databaseReference.child("users").child(Utils.Email).child("email").setValue(Utils.Email);
-                            databaseReference.child("users").child(Utils.Email).child("name").setValue(Utils.Name);
-                            databaseReference.child("users").child(Utils.Email).child("profilePicUrl").setValue(Utils.ProfileUrl);
-                            Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
-                        }
-                        progressDialog.dismiss();
-                        Intent intent = new Intent(MainActivity.this, ChatList.class);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                User user = databaseHelper.getUser();
+                if (user != null){
+                    Shared.login(MainActivity.this, user.getEmail(), user.getPassword());
+                    if (!Shared.token.isEmpty()){
+                        APIServices service = RetrofitAPI.getRetrofitInstance().create(APIServices.class);
+                        Call<Person> call = service.getDataPerson("Bearer " + Shared.token);
+                        call.enqueue(new Callback<Person>() {
+                            @Override
+                            public void onResponse(Call<Person> call, Response<Person> response) {
+                                try {
+                                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String userId = user.getEmail().replace('.','_');
+                                            if (!snapshot.child("users").hasChild(userId)){
+                                                databaseReference.child("users").child(userId).child("email").setValue(response.body().getEmail());
+                                                databaseReference.child("users").child(userId).child("name").setValue(response.body().getFullName());
+                                                databaseReference.child("users").child(userId).child("profilePicUrl").setValue(RetrofitAPI.BASE_URL +response.body().getImagePath());
+                                            }
+                                            progressDialog.dismiss();
+                                            Intent intent= new Intent(MainActivity.this, ChatList.class);
+                                            intent.putExtra("email",response.body().getEmail());
+                                            intent.putExtra("name",response.body().getFullName());
+                                            intent.putExtra("profilePicUrl",RetrofitAPI.BASE_URL +response.body().getImagePath());
+                                            intent.putExtra("userId",userId);
+                                            startActivity(intent);
+                                            overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            progressDialog.dismiss();
+//                                            Log.v("error failed",error.getMessage());
+                                        }
+                                    });
+
+                                } catch (Exception e) {
+                                    progressDialog.dismiss();
+                                    Shared.Alert(MainActivity.this, getString(R.string.failed), getString(R.string.failed_to_retrieve_data));
+//                                    Log.e(TAG, "onFailure: " + e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Person> call, Throwable t) {
+                                progressDialog.dismiss();
+                                Shared.Alert(MainActivity.this, getString(R.string.failed), getString(R.string.failed_to_retrieve_data));
+//                                Log.e(TAG, "onFailure: " + t.getMessage());
+                            }
+                        });
                     }
+                    progressDialog.dismiss();
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                }else{
+                    GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+                    if(account != null){
+                        String userName = account.getDisplayName();
+                        String userEmail = account.getEmail();
+                        String userPhoto = String.valueOf(account.getPhotoUrl());
+                        String userId = account.getEmail().replace('.','_');
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (!snapshot.child("users").hasChild(userId)){
+                                    databaseReference.child("users").child(userId).child("email").setValue(userEmail);
+                                    databaseReference.child("users").child(userId).child("name").setValue(userName);
+                                    databaseReference.child("users").child(userId).child("profilePicUrl").setValue(userPhoto);
+                                }
+                                progressDialog.dismiss();
+                                Intent intent= new Intent(MainActivity.this, ChatList.class);
+                                intent.putExtra("email",userEmail);
+                                intent.putExtra("name",userName);
+                                intent.putExtra("profilePicUrl",userPhoto);
+                                intent.putExtra("userId",userId);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                progressDialog.dismiss();
+//                                Log.v("error failed",error.getMessage());
+                            }
+                        });
                         progressDialog.dismiss();
-                        Log.v("error failed", error.getMessage());
+                    }else{
+                        progressDialog.dismiss();
+                        startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                        overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
                     }
-                });
+                }
 
+            }
+        });
 
+        findViewById(R.id.medecineREM).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent medrem = new Intent(getApplicationContext(), Agenda.class);
+                startActivity(medrem);
             }
         });
         findViewById(R.id.waterreminder).setOnClickListener(new View.OnClickListener() {
@@ -173,8 +265,35 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.my_agenda).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent water1 = new Intent(getApplicationContext(), Agenda.class);
-                startActivity(water1);
+
+
+                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                User user = databaseHelper.getUser();
+                if (user != null){
+                    Shared.login(MainActivity.this, user.getEmail(), user.getPassword());
+                    Handler handler =new Handler();
+                    Runnable runer ;
+                    runer = new Runnable(){
+                        @Override
+                        public void run() {
+                            if (!Shared.token.isEmpty()) {
+                                Intent agenda = new Intent(getApplicationContext(), Todo_list.class);
+                                startActivity(agenda);
+                                overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+                            }
+                        }
+                    };
+                    handler.postDelayed(runer,2000);
+
+                }else{
+
+
+                        startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                        overridePendingTransition(android.R.anim.slide_out_right,R.anim.slide_in_left );
+
+
+                }
+
             }
 
         });

@@ -269,7 +269,7 @@ public class AcceloGraph extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), AcceloData.class);
                     stopService(intent);
                     simpleSwitchSV.setEnabled(false);
-                    Toast.makeText(getApplicationContext(), "Will be started in 5 seconds", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.fivesec), Toast.LENGTH_SHORT).show();
                     Runnable mTimer1 = new Runnable() {
                         @Override
                         public void run() {
@@ -329,12 +329,12 @@ public class AcceloGraph extends AppCompatActivity {
                     try {
                         if (csvData.size() > 0 && howmany> 300) {
                             writer.writeAll(csvData);
-                            Toast.makeText(getBaseContext(), "Data saved"+xers.length +" gg" +howmany, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(), getString(R.string.save), Toast.LENGTH_LONG).show();
                             writer.close();
                             csvData.clear();
                         }
                         else {
-                            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), getString(R.string.notenough), Toast.LENGTH_SHORT).show();
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -389,17 +389,17 @@ public class AcceloGraph extends AppCompatActivity {
                                 File file3 = new File(sdCard.getAbsolutePath() + "/Download/DataAcceloNew.csv");
                                 if (file1.exists()) {
                                     if (file1.delete()) {
-                                        Toast.makeText(AcceloGraph.this, "Reset to default", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AcceloGraph.this, getString(R.string.resetTodef), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if (file2.exists()) {
                                     if (file2.delete()) {
-                                        Toast.makeText(AcceloGraph.this, "Reset to default", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AcceloGraph.this, getString(R.string.resetTodef), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if (file3.exists()) {
                                     if (file3.delete()) {
-                                        Toast.makeText(AcceloGraph.this, "Reset to default", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(AcceloGraph.this, getString(R.string.resetTodef), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 overridePendingTransition(0, 0);
@@ -525,17 +525,24 @@ public class AcceloGraph extends AppCompatActivity {
 
                         DatabaseHelper databaseHelper = new DatabaseHelper(AcceloGraph.this);
                         User user = databaseHelper.getUser();
-                        if (user != null) {
+                        if (user != null){
                             Shared.login(AcceloGraph.this, user.getEmail(), user.getPassword());
-                        } else {
+                            if (!Shared.token.isEmpty()) {
+                                Intent intent = new Intent(AcceloGraph.this, ProfileActivity.class);
+                                AcceloGraph.this.startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+                            }
+                        }else{
                             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(AcceloGraph.this);
-                            if (account != null) {
-                                startActivity(new Intent(AcceloGraph.this, ProfileActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
-                            } else {
+                            if(account != null){
+                                startActivity(new Intent(AcceloGraph.this,ProfileActivity.class));
+                                overridePendingTransition(android.R.anim.slide_out_right, R.anim.slide_in_left);
 
-                                startActivity(new Intent(AcceloGraph.this, LoginActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
+                            }else{
+
+                                startActivity(new Intent(AcceloGraph.this,LoginActivity.class));
+                                overridePendingTransition(android.R.anim.slide_out_right,R.anim.slide_in_left );
+
                             }
                         }
                         return true;
@@ -592,7 +599,7 @@ public class AcceloGraph extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission Granted
-                Toast.makeText(getBaseContext(), "Permission Granted", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), getString(R.string.permgranted), Toast.LENGTH_LONG).show();
             } else {
                 // Permission Denied
                 Toast.makeText(getApplicationContext(), "WRITE_EXTERNAL_STORAGE Denied", Toast.LENGTH_SHORT).show();
@@ -683,7 +690,7 @@ public class AcceloGraph extends AppCompatActivity {
 
                         COMPARE[0] = Math.sqrt(Math.pow(_VALS[0] / columns[0], 2) + Math.pow(_VALS[1] / columns[0], 2) + Math.pow(_VALS[2] / columns[0], 2));
                         COMPAREAcc[0] = _VALS[3]/ columns[0];
-                        Toast.makeText(getApplicationContext(), "Your data => " + _VALS[3]/ columns[0], Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getApplicationContext(), "Your data => " + _VALS[3]/ columns[0], Toast.LENGTH_LONG).show();
                         function3();
                         function2();
                     }
@@ -744,7 +751,7 @@ public class AcceloGraph extends AppCompatActivity {
                         COMPARE[3] = Math.sqrt(Math.pow(_OTHER_VALS[4] / columns[0], 2) + Math.pow(_OTHER_VALS[5] / columns[0], 2) + Math.pow(_OTHER_VALS[6] / columns[0], 2));
                         COMPAREAcc[2] =  _OTHER_VALS[7] / columns[0];
                         //Toast.makeText(getApplicationContext(), "Your data => " + _VALS[2], Toast.LENGTH_LONG).show();
-                        Toast.makeText(getApplicationContext(), "here : => " + COMPAREAcc[2], Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(getApplicationContext(), "here : => " + COMPAREAcc[2], Toast.LENGTH_SHORT).show();
                         if ((COMPAREAcc[2] / COMPAREAcc[0]) < 1) {
                             COMPAREAcc[4] = (COMPAREAcc[2] / COMPAREAcc[0]) * 100;
                         } else {

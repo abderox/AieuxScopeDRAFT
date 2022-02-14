@@ -1,7 +1,5 @@
 package com.example.testchat.Views;
 
-import static android.service.controls.ControlsProviderService.TAG;
-
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,16 +78,16 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (txt_phone.getText().toString().matches("")) {
-                    Shared.Alert(RegisterActivity.this,"Important !","the phone field is required");
+                    Shared.Alert(RegisterActivity.this,getString(R.string.important),getString(R.string.the_phone_field_is_required));
                     return;
                 }if (txt_email.getText().toString().matches("")) {
-                    Shared.Alert(RegisterActivity.this,"Important !","the email field is required");
+                    Shared.Alert(RegisterActivity.this,getString(R.string.important),getString(R.string.the_email_field_is_required));
                     return;
                 }if (txt_fullName.getText().toString().matches("")) {
-                    Shared.Alert(RegisterActivity.this,"Important !","the name field is required");
+                    Shared.Alert(RegisterActivity.this,getString(R.string.important),getString(R.string.the_name_field_is_required));
                     return;
                 }if (txt_password.getText().toString().matches("")) {
-                    Shared.Alert(RegisterActivity.this,"Important !","the password field is required");
+                    Shared.Alert(RegisterActivity.this,getString(R.string.important),getString(R.string.the_password_field_is_required));
                     return;
                 }
             addUser(txt_email.getText().toString(),txt_password.getText().toString(),txt_fullName.getText().toString()
@@ -130,8 +127,8 @@ public class RegisterActivity extends AppCompatActivity {
     private void addUser(String email,String password,String fullName,long phone){
         ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("loading");
-        progressDialog.setTitle("wait");
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setTitle(getString(R.string.wait));
         progressDialog.show();
         APIServices service =   RetrofitAPI.getRetrofitInstance().create(APIServices.class);
         if (picturePath != null) {
@@ -151,11 +148,11 @@ public class RegisterActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         switch (response.body().getResult()){
                             case "error":{
-                                Shared.Alert(RegisterActivity.this,"Error !","An Error was occurred try later ");
+                                Shared.Alert(RegisterActivity.this,getString(R.string.failed),getString(R.string.registration_failed_try_later));
                                 return;
                             }
                             case "not" : {
-                                Shared.Alert(RegisterActivity.this,"Error !","the email selected is already exist");
+                                Shared.Alert(RegisterActivity.this,getString(R.string.failed),getString(R.string.the_email_selected_is_already_exist));
                                 return;
                             }
                             default:
@@ -168,20 +165,20 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }catch (Exception e){
                         progressDialog.dismiss();
-                        Shared.Alert(RegisterActivity.this,"Error !","An Error was occurred try later ");
-                        Log.e(TAG,"onFailure: "+ e.getMessage());
+                        Shared.Alert(RegisterActivity.this,getString(R.string.failed),getString(R.string.registration_failed_try_later));
+//                        Log.e(TAG,"onFailure: "+ e.getMessage());
                     }
 
                    }
                 @Override
                 public void onFailure(Call<Result> call, Throwable t) {
                     progressDialog.dismiss();
-                    Shared.Alert(RegisterActivity.this,"Error !","An Error was occurred try later ");
-                    Log.e(TAG,"onFailure: "+ t.getMessage());
+                    Shared.Alert(RegisterActivity.this,getString(R.string.failed),getString(R.string.registration_failed_try_later));
+//                    Log.e(TAG,"onFailure: "+ t.getMessage());
                 }
             });
         }else{
-            Shared.Alert(RegisterActivity.this,"Important !","Choose an image for your profile");
+            Shared.Alert(RegisterActivity.this,getString(R.string.important),getString(R.string.choose_an_image_for_your_profile));
         }
 
     }
@@ -209,7 +206,8 @@ public class RegisterActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             updateUI();
         } catch (ApiException e) {
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Shared.Alert(RegisterActivity.this,getString(R.string.failed),getString(R.string.failed_to_login_try_later));
+//            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
         }
     }
     private  void updateUI(){

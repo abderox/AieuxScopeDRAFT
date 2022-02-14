@@ -10,26 +10,30 @@
     android:focusableInTouchMode="true"
     android:gravity="center"
     android:layout_gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:paddingTop="20dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentLeft="true"
                     style="@style/viewParent.headerText.NoMode"
-                    android:text="Already \nhave an \nAccount?"/>
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/already_nhave_an_naccount" />
 
                 <ImageView
                     android:layout_width="200dp"
@@ -42,96 +46,99 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputEmail"
                 style="@style/parent1"
-                app:startIconDrawable="@drawable/ic_user"
+                android:layout_marginTop="@dimen/loginViewsMargin"
                 app:startIconContentDescription="Email"
-                android:layout_marginTop="@dimen/loginViewsMargin">
+                app:startIconDrawable="@drawable/ic_user">
+
                 <EditText
                     android:id="@+id/editTextEmailL"
                     style="@style/modifiedEditText"
+                    android:hint="@string/login_email_hint"
                     android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:hint="@string/login_email_hint"/>
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputPassword"
                 style="@style/parent1"
+                android:layout_marginTop="@dimen/loginViewsMargin"
                 app:endIconMode="password_toggle"
-                app:startIconDrawable="@drawable/ic_baseline_lock_24"
                 app:startIconContentDescription="Password"
-                android:layout_marginTop="@dimen/loginViewsMargin">
+                app:startIconDrawable="@drawable/ic_baseline_lock_24">
+
                 <EditText
                     android:id="@+id/editTextPasswordL"
                     style="@style/modifiedEditText"
                     android:hint="@string/login_password_hint"
-                    android:maxLines="1"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                 android:id="@+id/cirLoginButton"
                 style="@style/loginButton"
-                app:spinning_bar_width="4dp"
-                app:spinning_bar_color="#FFF"
-                android:text="Login"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/loginViewsMargin"
-                app:spinning_bar_padding="6dp"
+                android:text="@string/login"
                 app:initialCornerAngle="27dp"
+                app:spinning_bar_color="#FFF"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp"
                 tools:ignore="MissingClass" />
 
             <TextView
                 style="@style/parent1"
+                android:layout_marginTop="@dimen/loginViewsMargin"
+                android:onClick="onLoginClick"
+                android:text="@string/new_user_register_now"
                 android:textAlignment="center"
-                android:textStyle="bold"
                 android:textColor="@color/themeColor"
                 android:textSize="17sp"
-                android:text="New user? Register Now"
-                android:layout_marginTop="@dimen/loginViewsMargin"
-                android:onClick="onLoginClick"/>
+                android:textStyle="bold" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="12"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:layout_marginTop="30dp">
+                android:weightSum="12">
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_weight="3"/>
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimaryDark" />
 
                 <TextView
                     style="@style/viewParent.headerText.NoMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Use other Methods"
                     android:layout_weight="6"
-                    android:textSize="12sp"
-                    android:textAlignment="center"/>
+                    android:text="@string/use_other_methods"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_weight="3"/>
+                    android:layout_weight="3"
+                    android:background="@color/colorPrimaryDark" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="20dp">
-               <com.google.android.gms.common.SignInButton
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+
+                <com.google.android.gms.common.SignInButton
                     android:id="@+id/sign_in_button"
                     android:layout_width="250dp"
                     android:layout_height="match_parent"
-                    android:layout_centerInParent="true"/>
+                    android:layout_centerInParent="true" />
             </LinearLayout>
 
         </LinearLayout>

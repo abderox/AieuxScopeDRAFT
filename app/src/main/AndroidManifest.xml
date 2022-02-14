@@ -24,6 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".Views.createNew"
+            android:exported="true" />
+        <activity
+            android:name=".Views.Todo_list"
+            android:exported="true" />
+        <activity
             android:name=".Views.AboutUs"
             android:exported="true" />
         <activity
@@ -31,6 +37,9 @@
             android:exported="true" />
         <activity
             android:name=".Views.AcceloDATA"
+            android:exported="true" />
+        <activity
+            android:name=".Views.DoctorsList"
             android:exported="true" />
 
         <service
@@ -114,17 +123,20 @@
         <receiver
             android:name=".Services.WhoBG"
             android:exported="true" />
-        <activity android:name=".Views.AlarmActivity"></activity>
 
-        <receiver android:name=".Services.broadcastReceiver.AlarmBroadcastReceiver"
+        <activity android:name=".Views.AlarmActivity" />
+
+        <receiver
+            android:name=".Services.broadcastReceiver.AlarmBroadcastReceiver"
             android:enabled="false"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <service android:name=".Services.broadcastReceiver.AlarmService"
+        <service
+            android:name=".Services.broadcastReceiver.AlarmService"
             android:enabled="true"
             android:exported="true"
             tools:ignore="Instantiatable" />

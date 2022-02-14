@@ -1,5 +1,6 @@
 package com.example.testchat.Views;
 
+import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.Button;
@@ -34,6 +35,7 @@ public class AlarmActivity extends AppCompatActivity {
         return inst;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

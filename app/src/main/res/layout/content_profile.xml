@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ProfileActivity"
+    tools:context=".Views.ProfileActivity"
     tools:showIn="@layout/activity_profile">
 
         <LinearLayout
@@ -19,7 +19,7 @@
 
             <TextView
                 style="@style/headerText"
-                android:text="Account Info"
+                android:text="@string/account_info"
                 android:layout_marginBottom="40dp"/>
 
             <RelativeLayout style="@style/profileDetailsLayout"
@@ -32,15 +32,15 @@
 
                 <TextView
                     android:id="@+id/nameTextView"
-                    android:text="Name"
+                    style="@style/profileDetailsTextMain"
                     android:layout_toRightOf="@id/nameImageView"
-                style="@style/profileDetailsTextMain" />
+                    android:text="@string/name" />
 
                 <TextView
                     android:id="@+id/profileName"
                     style="@style/profileDetailsMiniText"
                     android:layout_toRightOf="@id/nameImageView"
-                    android:text="developer" />
+                    android:text="@string/four_points" />
 
             </RelativeLayout>
 
@@ -56,13 +56,13 @@
                 <TextView
                     style="@style/profileDetailsTextMain"
                     android:layout_toRightOf="@id/mobileImageView"
-                    android:text="Phone" />
+                    android:text="@string/phone" />
 
                 <TextView
                     android:id="@+id/profilePhone"
                     style="@style/profileDetailsMiniText"
                     android:layout_toRightOf="@id/mobileImageView"
-                    android:text="+91-8129999999" />
+                    android:text="@string/four_points" />
 
             </RelativeLayout>
 
@@ -75,15 +75,15 @@
                     android:src="@drawable/email" />
 
                 <TextView
-                    android:text="Email"
+                    style="@style/profileDetailsTextMain"
                     android:layout_toRightOf="@id/emailImageView"
-                    style="@style/profileDetailsTextMain" />
+                    android:text="@string/email" />
 
                 <TextView
                     android:id="@+id/profileEmail"
                     style="@style/profileDetailsMiniText"
                     android:layout_toRightOf="@id/emailImageView"
-                    android:text="developer@appsnipp.com" />
+                    android:text="@string/four_points" />
 
             </RelativeLayout>
 
@@ -107,7 +107,7 @@
                     android:gravity="center"
                     android:textColor="#FF962121"
                     android:layout_toRightOf="@id/emailImageView1"
-                    android:text="Logout" />
+                    android:text="@string/logout" />
 
 
             </LinearLayout>

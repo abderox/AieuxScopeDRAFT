@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_height="match_parent"
-    android:layout_width="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Task title"
+            android:text="@string/task_title1"
             tools:ignore="MissingPrefix" />
 
         <EditText
@@ -72,7 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Task description"
+        android:text="@string/task_description4"
         tools:ignore="MissingPrefix" />
 
     <EditText
@@ -93,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Task date"
+        android:text="@string/categoryd"
         tools:ignore="MissingPrefix" />
 
     <EditText
@@ -114,40 +115,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Task time"
+        android:text=""
         tools:ignore="MissingPrefix" />
-
-    <EditText
-        android:textSize="14sp"
-        fontPath="fonts/nunito_light.ttf"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:singleLine="true"
-        android:background="@drawable/btn_border"
-        android:padding="10dp"
-        android:id="@+id/taskTime"
-        tools:ignore="MissingPrefix" />
-
     <TextView
         android:layout_marginLeft="3dp"
         fontPath="fonts/nunito_light.ttf"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Add an event"
+        android:text=""
         tools:ignore="MissingPrefix" />
-
-    <EditText
-        android:textSize="14sp"
+    <TextView
+        android:layout_marginLeft="3dp"
         fontPath="fonts/nunito_light.ttf"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:singleLine="true"
-        android:background="@drawable/btn_border"
-        android:padding="10dp"
-        android:id="@+id/taskEvent"
+        android:layout_marginTop="30dp"
+        android:text=""
         tools:ignore="MissingPrefix" />
 
 
@@ -155,13 +139,11 @@
         android:id="@+id/add"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="15dp"
         android:backgroundTint="@color/colorAccent"
-        android:layout_gravity="center"
-        android:text="+"
-        android:src="@drawable/ic_add_black_24dp"
         android:textColor="@color/white" />
 
 
 </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

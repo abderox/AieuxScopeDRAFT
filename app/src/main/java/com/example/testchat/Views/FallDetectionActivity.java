@@ -129,15 +129,22 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
                         User user = databaseHelper.getUser();
                         if (user != null){
                             Shared.login(FallDetectionActivity.this, user.getEmail(), user.getPassword());
+                            if (!Shared.token.isEmpty()) {
+                                Intent intent = new Intent(FallDetectionActivity.this, ProfileActivity.class);
+                                FallDetectionActivity.this.startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+                            }
                         }else{
                             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(FallDetectionActivity.this);
                             if(account != null){
                                 startActivity(new Intent(FallDetectionActivity.this,ProfileActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+                                overridePendingTransition(android.R.anim.slide_out_right, R.anim.slide_in_left);
+
                             }else{
 
                                 startActivity(new Intent(FallDetectionActivity.this,LoginActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+                                overridePendingTransition(android.R.anim.slide_out_right,R.anim.slide_in_left );
+
                             }
                         }
                         return true;
@@ -165,7 +172,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
                         setyyy();
                         switchvar = true;
                         MainActivity.switchVar = true;
-                        Toast.makeText(getApplicationContext(), "Safe walking! We track you for safety", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.safetrack), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), FallDetection.class);
                         startService(intent);
 
@@ -180,7 +187,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
                     } else {
 
                         simpleSwitch.setChecked(false);
-                        Toast.makeText(getApplicationContext(), "Add at least one contact then try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.tryagainfall), Toast.LENGTH_SHORT).show();
                     }
                     mcursor.close();
                 } else {
@@ -238,7 +245,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
             arrayAdapter = new EmergencyAdapter(this, R.layout.simplerow, arrayList);
             lv.setAdapter(arrayAdapter);
             simpleSwitch.setEnabled(true);
-            Snackbar snackbar = Snackbar.make(coordinate, "To add more contacts PRESS \"+\" ", Snackbar.LENGTH_INDEFINITE);
+            Snackbar snackbar = Snackbar.make(coordinate, getString(R.string.addmore), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
             snackbar.setAction("OKAY", view -> {
 
@@ -247,7 +254,7 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
             snackbar.show();
 
         } else {
-            Snackbar snackbar = Snackbar.make(coordinate, "No contacts yet ! add now.", Snackbar.LENGTH_INDEFINITE);
+            Snackbar snackbar = Snackbar.make(coordinate, getString(R.string.nocontact), Snackbar.LENGTH_INDEFINITE);
             snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE);
             snackbar.setAction("CANCEL", view -> {
                 //
@@ -278,18 +285,18 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
 
     public void openDialog() {
         customizedAlert exampleDialog = new customizedAlert();
-        exampleDialog.show(getSupportFragmentManager(), "Add contact");
+        exampleDialog.show(getSupportFragmentManager(), getString(R.string.addcontact));
     }
 
     @Override
     public void applyTexts(String Name, String Number) {
         //Insert into db
         if (Name.length() != 18 && Number.length() != 10) {
-            Toast.makeText(getApplicationContext(), "Please enter again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.tryagainn), Toast.LENGTH_SHORT).show();
         } else {
             DatabaseHelper db = new DatabaseHelper(this);
             db.addNewContact(Name, Number);
-            Toast.makeText(getApplicationContext(), "Contact Added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.contadded), Toast.LENGTH_SHORT).show();
             Cursor cursor = getAllContacts();
             if (cursor.moveToFirst()) {
                 do {
@@ -318,10 +325,10 @@ public class FallDetectionActivity extends AppCompatActivity implements customiz
             switch (item.getItemId()) {
                 case R.id.menuDelete:
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.AlertDialog_AppCompat_Light);
-                    alertDialogBuilder.setTitle("Delete contact").setMessage("Are you sure , you want to delete this contact ?").
-                            setPositiveButton("Yes", (dialog, which) -> {
+                    alertDialogBuilder.setTitle(getString(R.string.deletecontt)).setMessage(getString(R.string.areyousuredelete)).
+                            setPositiveButton(getString(R.string.yes), (dialog, which) -> {
                                 deleteContactFromBynum(position);
-                                Toast.makeText(getApplicationContext(), "You have deleted from contacts", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.addedsucces), Toast.LENGTH_LONG).show();
 
                             })
                             .setNegativeButton("No", (dialog, which) -> dialog.cancel()).show();

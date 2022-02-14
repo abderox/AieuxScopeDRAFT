@@ -50,9 +50,9 @@ public class IntroActivity extends AppCompatActivity {
 
         //Data
         final List<ScreenItem> mList = new ArrayList<>();
-        mList.add(new ScreenItem("Assist elderly", "Only death can split us .\nOld people should never be forgotten .", R.drawable.first_));
-        mList.add(new ScreenItem("Add medicines ", "Select the date , time and add medicines . An alaram \nis set to remind them .", R.drawable.reminder_medic));
-        mList.add(new ScreenItem("Hydration Time !", "People with kidneys illness, will never\n be parched again !", R.drawable.water_reminder));
+        mList.add(new ScreenItem(getString(R.string.assisstelder), getString(R.string.assistelderdes), R.drawable.first_));
+        mList.add(new ScreenItem(getString(R.string.addmedd), getString(R.string.addmed), R.drawable.reminder_medic));
+        mList.add(new ScreenItem(getString(R.string.hydrtime), getString(R.string.hydration), R.drawable.water_reminder));
 
         //Setup viewPager
         screenPager = findViewById(R.id.screen_viewpager);

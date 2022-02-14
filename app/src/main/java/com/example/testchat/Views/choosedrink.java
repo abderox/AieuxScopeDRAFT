@@ -44,11 +44,10 @@ public class choosedrink extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(choosedrink.this );
 // Setting Dialog Title
-                alertDialog.setTitle("reminder dialog!");
+                alertDialog.setTitle(getString(R.string.remwater));
 
 // Setting Dialog Message
-                alertDialog.setMessage("Experts generally recommend that you should consume at least 1.7 liters of fluid per 24 hours." +
-                        "Which mean you need 6 takes of water today stay tuned we will remind you!");
+                alertDialog.setMessage(getString(R.string.experts));
 // Setting Icon to Dialog
                 alertDialog.setIcon(R.drawable.idea);
 // Showing Alert Message

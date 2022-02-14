@@ -1,10 +1,7 @@
 package com.example.testchat.Views;
 
-import static android.service.controls.ControlsProviderService.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,19 +32,24 @@ public class LoginActivity extends AppCompatActivity {
         txt_email = findViewById(R.id.editTextEmailL);
         txt_password = findViewById(R.id.editTextPasswordL);
         login = findViewById(R.id.cirLoginButton);
-        txt_email.setText("t2est1@test.com");
+        txt_email.setText("test1@test.com");
         txt_password.setText("test");
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (txt_email.getText().toString().matches("")) {
-                    Shared.Alert(LoginActivity.this,"Important !","the email field is required");
+                    Shared.Alert(LoginActivity.this,getString(R.string.important),getString(R.string.the_email_field_is_required));
                     return;
                 }if (txt_password.getText().toString().matches("")) {
-                    Shared.Alert(LoginActivity.this,"Important !","the password field is required");
+                    Shared.Alert(LoginActivity.this,getString(R.string.important),getString(R.string.the_password_field_is_required));
                     return;
                 }
                 Shared.login(LoginActivity.this,txt_email.getText().toString(),txt_password.getText().toString());
+                if (!Shared.token.isEmpty()){
+                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+            }
             }
         });
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -73,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void onLoginClick(View View){
         startActivity(new Intent(this, RegisterActivity.class));
-        overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
 
     }
     @Override
@@ -95,7 +97,8 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             updateUI();
         } catch (ApiException e) {
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Shared.Alert(LoginActivity.this,getString(R.string.failed),getString(R.string.failed_to_login_try_later));
+//            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
         }
     }
     private  void updateUI(){

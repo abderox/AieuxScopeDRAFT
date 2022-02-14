@@ -2,7 +2,10 @@ package com.example.testchat.Services;
 
 
 import com.example.testchat.Models.Person;
+import com.example.testchat.Models.ResponseTask;
 import com.example.testchat.Models.Result;
+import com.example.testchat.Models.Todo;
+import com.example.testchat.Models.TodoModel;
 import com.example.testchat.Models.User;
 
 import okhttp3.MultipartBody;
@@ -30,4 +33,8 @@ public interface APIServices {
     Call<Result> getData();
     @GET("users/profile")
     Call<Person> getDataPerson(@Header("Authorization")String token);
+    @GET("todo")
+    Call<ResponseTask> getDataTask(@Header("Authorization")String token);
+    @POST("todo")
+    Call<Todo> createtask(@Header("Authorization")String token, @Body TodoModel todoModel);
 }

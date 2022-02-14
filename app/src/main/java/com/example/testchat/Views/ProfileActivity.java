@@ -1,17 +1,15 @@
 package com.example.testchat.Views;
 
-import static android.service.controls.ControlsProviderService.TAG;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.bumptech.glide.Glide;
 import com.example.testchat.Models.Person;
 import com.example.testchat.R;
@@ -67,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 DatabaseHelper databaseHelper = new DatabaseHelper(ProfileActivity.this);
                 databaseHelper.deleteUser();
+                Shared.token="";
                 GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(ProfileActivity.this);
                 if (account != null) signOut();
                 onBackPressed();
@@ -77,7 +76,6 @@ public class ProfileActivity extends AppCompatActivity {
     private void signOut() {
         mGoogleSignInClient.signOut();
     }
-
     private void fillComponentGoogle(GoogleSignInAccount acct) {
         String personName = acct.getDisplayName();
         String personEmail = acct.getEmail();
@@ -86,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity {
         Emailup.setText(personEmail);
         Email.setText(personEmail);
         Name.setText(personName);
-        Phone.setText("not available");
+        Phone.setText(R.string.not_available);
         String ProfileUrl = String.valueOf(personPhoto);
         if (personPhoto != null) {
             Glide.with(ProfileActivity.this).load(String.valueOf(personPhoto)).into(imgProfile);
@@ -97,11 +95,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
-//        overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
-//    }
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(ProfileActivity.this, MainActivity.class));
+        overridePendingTransition(R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
 
     private void fillComponent() {
         APIServices service = RetrofitAPI.getRetrofitInstance().create(APIServices.class);
@@ -118,15 +116,15 @@ public class ProfileActivity extends AppCompatActivity {
                     Glide.with(ProfileActivity.this).load(RetrofitAPI.BASE_URL + response.body().getImagePath()).into(imgProfile);
 
                 } catch (Exception e) {
-                    Shared.Alert(ProfileActivity.this, "Error !", "An Error was occurred try later ");
-                    Log.e(TAG, "onFailure: " + e.getMessage());
+                    Shared.Alert(ProfileActivity.this, getString(R.string.failed), getString(R.string.failed_to_retrieve_data));
+//                    Log.e(TAG, "onFailure: " + e.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<Person> call, Throwable t) {
-                Shared.Alert(ProfileActivity.this, "Error !", "An Error was occurred try later ");
-                Log.e(TAG, "onFailure: " + t.getMessage());
+                Shared.Alert(ProfileActivity.this, getString(R.string.failed), getString(R.string.failed_to_retrieve_data));
+//                Log.e(TAG, "onFailure: " + t.getMessage());
             }
         });
     }

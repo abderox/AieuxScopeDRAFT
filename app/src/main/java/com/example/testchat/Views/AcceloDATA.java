@@ -131,7 +131,7 @@ public class AcceloDATA extends AppCompatActivity implements SensorEventListener
         // default separator is a comma
         try (CSVWriter writer = new CSVWriter(new FileWriter(sdCard.getAbsolutePath() + "/Download/DataAccelo.csv"))) {
             writer.writeAll(csvData);
-            Toast.makeText(getBaseContext(), "Data saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), getString(R.string.save), Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -196,7 +196,7 @@ public class AcceloDATA extends AppCompatActivity implements SensorEventListener
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_ASK_PERMISSIONS);
             return;
         }
-        Toast.makeText(getBaseContext(), "Permission is already granted", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), getString(R.string.permissionSen), Toast.LENGTH_LONG).show();
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

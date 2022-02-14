@@ -87,17 +87,24 @@ public class Agenda extends AppCompatActivity implements CreateTaskBottomSheetFr
 
                         DatabaseHelper databaseHelper = new DatabaseHelper(Agenda.this);
                         User user = databaseHelper.getUser();
-                        if (user != null) {
+                        if (user != null){
                             Shared.login(Agenda.this, user.getEmail(), user.getPassword());
-                        } else {
+                            if (!Shared.token.isEmpty()) {
+                                Intent intent = new Intent(Agenda.this, ProfileActivity.class);
+                                Agenda.this.startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_left, R.anim.stay);
+                            }
+                        }else{
                             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Agenda.this);
-                            if (account != null) {
-                                startActivity(new Intent(Agenda.this, ProfileActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
-                            } else {
+                            if(account != null){
+                                startActivity(new Intent(Agenda.this,ProfileActivity.class));
+                                overridePendingTransition(android.R.anim.slide_out_right, R.anim.slide_in_left);
 
-                                startActivity(new Intent(Agenda.this, LoginActivity.class));
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.stay);
+                            }else{
+
+                                startActivity(new Intent(Agenda.this,LoginActivity.class));
+                                overridePendingTransition(android.R.anim.slide_out_right,R.anim.slide_in_left );
+
                             }
                         }
                         return true;

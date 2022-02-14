@@ -75,7 +75,7 @@
                                 android:src="@drawable/medecine" />
 
                             <TextView
-                                android:id="@+id/textViewSub1Title"
+                                android:id="@+id/medecineREM"
                                 style="@style/viewParent.headerText.HomeCardTitle"
                                 android:text="@string/medicine_nreminder" />
 
