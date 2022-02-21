@@ -327,7 +327,7 @@ public class AcceloGraph extends AppCompatActivity {
 
 
                     try {
-                        if (csvData.size() > 0 && howmany> 300) {
+                        if (csvData.size() > 0 ) {
                             writer.writeAll(csvData);
                             Toast.makeText(getBaseContext(), getString(R.string.save), Toast.LENGTH_LONG).show();
                             writer.close();

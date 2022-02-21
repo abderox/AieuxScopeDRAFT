@@ -139,7 +139,7 @@ public class AcceloData extends Service {
         csvData.add(accs);
 
         try {
-            if (csvData.size() > 0 && howmany > 150) {
+            if (csvData.size() > 0 ) {
                 writer.writeAll(csvData);
                 Toast.makeText(getBaseContext(), "Data saved", Toast.LENGTH_LONG).show();
                 writer.close();
