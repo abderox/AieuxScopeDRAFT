@@ -72,9 +72,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:fontFamily="@font/baloo_thambi"
                 android:text="08 : 45 PM"
                 android:textAlignment="center"
-                android:fontFamily="@font/baloo_thambi"
                 android:textColor="#27D6CB"
                 android:textSize="46dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,6 +115,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.589" />
 
+
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/selectTimeBtn"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -125,10 +127,10 @@
                 android:textColor="#27D6CB"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintHorizontal_bias="0.199"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.326" />
+                app:layout_constraintVertical_bias="0.212" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab"
@@ -195,6 +197,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/ic_baseline_assessment_24" />
+
+            <Switch
+                android:id="@+id/my"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="44dp"
+                android:background="#C9E9F5"
+                app:layout_constraintBottom_toBottomOf="@+id/fab"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.958"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/selectedTime"
+                app:layout_constraintVertical_bias="0.044"></Switch>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

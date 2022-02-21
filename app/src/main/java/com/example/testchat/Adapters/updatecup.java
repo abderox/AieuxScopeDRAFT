@@ -4,8 +4,11 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +24,40 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testchat.R;
 import com.example.testchat.Services.AlarmReceiver;
+import com.example.testchat.Services.DatabaseHelper;
 import com.example.testchat.Views.ActivityNumberPicher;
-import com.example.testchat.Views.prise;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
+
+import java.util.Calendar;
+
+
+
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
@@ -35,13 +71,18 @@ public class updatecup extends AppCompatActivity {
     private Calendar calendar;
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
+    private SQLiteDatabase rqt;
+    Switch witch;
+
 
     Intent intentprise;
     Intent intentnumber;
+    Intent intentstatistic;
     FloatingActionButton myFab1;
     FloatingActionButton myFab2;
     FloatingActionButton myFab;
     Boolean isTrue = true;
+
 
 
 
@@ -61,10 +102,23 @@ public class updatecup extends AppCompatActivity {
         myFab1.setColorFilter(Color.WHITE);
         myFab2.setColorFilter(Color.WHITE);
 
+
         final Animation rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
         final Animation rotateBack = AnimationUtils.loadAnimation(this, R.anim.rotate_back);
         final Animation open = AnimationUtils.loadAnimation(this, R.anim.fab_open);
         final Animation close = AnimationUtils.loadAnimation(this, R.anim.fab_close);
+        Switch witch = (Switch) findViewById(R.id.my);
+        witch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PackageManager pm  = updatecup.this.getPackageManager();
+                ComponentName componentName = new ComponentName(updatecup.this,AlarmReceiver.class);
+                pm.setComponentEnabledSetting(componentName,PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+                Toast.makeText(getApplicationContext(), "you have cancelled your water Intaker", Toast.LENGTH_LONG).show();
+            }
+        });
+
 
         myFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,12 +191,11 @@ public class updatecup extends AppCompatActivity {
         myFab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intentprise= new Intent(updatecup.this, prise.class);
-                startActivity(intentprise);
+                intentstatistic = new Intent(updatecup.this,list_viewActivity.class);
+                startActivity(intentstatistic);
 
             }
         });
-
 
 
 
@@ -151,7 +204,7 @@ public class updatecup extends AppCompatActivity {
 
     private void cancelAlarm() {
 
-        Intent intent = new Intent(this, AlarmReceiver.class);
+        Intent intent = new Intent(this,AlarmReceiver.class);
 
         pendingIntent = PendingIntent.getBroadcast(this,0,intent,0);
 
@@ -167,6 +220,14 @@ public class updatecup extends AppCompatActivity {
 
     private void setAlarm() {
 
+        DatabaseHelper dpHelper = new DatabaseHelper(this);
+        rqt = dpHelper.getWritableDatabase();
+        Cursor cur = rqt.rawQuery("SELECT periode FROM UserInfo ",null);
+        cur.moveToFirst();
+        @SuppressLint("Range") String period = cur.getString(cur.getColumnIndex("periode"));
+        System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm "+period);
+        int p = Integer.parseInt(period);
+
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(this,AlarmReceiver.class);
@@ -176,7 +237,7 @@ public class updatecup extends AppCompatActivity {
         //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),
         // AlarmManager.INTERVAL_DAY,pendingIntent);
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * 30, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000 * 60 * p, pendingIntent);
 
         Toast.makeText(this, "Alarm set Successfully", Toast.LENGTH_SHORT).show();
 
@@ -184,6 +245,7 @@ public class updatecup extends AppCompatActivity {
 
     }
 
+    @SuppressLint("Range")
     private void showTimePicker() {
 
         picker = new MaterialTimePicker.Builder()
@@ -240,5 +302,6 @@ public class updatecup extends AppCompatActivity {
 
 
     }
+
 
 }

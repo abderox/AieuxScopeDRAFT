@@ -76,19 +76,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertuserdata(String poids, String prises, String periode){
+    public boolean insertuserdata(String poids, String prises, String periode,String hauteur){
         SQLiteDatabase DB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("poids", poids);
         contentValues.put("prises", prises);
         contentValues.put("periode", periode);
-        long result = DB.insert("Userdetails", null, contentValues);
+        contentValues.put("hauteur", hauteur);
+        long result = DB.insert("UserInfo", null, contentValues);
         if(result == -1){
             return false;
         }else{
             return true;
         }
     }
+    public Cursor getInfo(){
+
+        SQLiteDatabase db = getWritableDatabase();
+        return db.rawQuery("SELECT * FROM UserInfo ", null);
+    }
+
 
     public void addUser(User user) {
 

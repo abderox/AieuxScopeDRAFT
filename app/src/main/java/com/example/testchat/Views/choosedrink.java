@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.testchat.R;
 import com.example.testchat.Adapters.updatecup;
+import com.example.testchat.R;
 
 
 public class choosedrink extends AppCompatActivity {
@@ -22,7 +22,7 @@ public class choosedrink extends AppCompatActivity {
     Button cup;
     Intent intentcup;
     NumberPicker numberpicker;
-     ImageView Drop;
+    ImageView Drop;
     TextView Remaining;
     TextView needs;
 
@@ -44,10 +44,11 @@ public class choosedrink extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(choosedrink.this );
 // Setting Dialog Title
-                alertDialog.setTitle(getString(R.string.remwater));
+                alertDialog.setTitle("reminder dialog!");
 
 // Setting Dialog Message
-                alertDialog.setMessage(getString(R.string.experts));
+                alertDialog.setMessage("Experts generally recommend that you should consume at least 1.7 liters of fluid per 24 hours." +
+                        "Which mean you need 6 takes of water today stay tuned we will remind you!");
 // Setting Icon to Dialog
                 alertDialog.setIcon(R.drawable.idea);
 // Showing Alert Message
@@ -70,6 +71,11 @@ public class choosedrink extends AppCompatActivity {
 
 
 }
+
+
+
+
+
 
 
 
